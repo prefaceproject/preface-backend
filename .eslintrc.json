@@ -10,7 +10,7 @@
     "ecmaVersion": 12
   },
   "rules": {
-    "prettier/prettier": ["error"],
-    "no-unused-vars": ["error", { "vars": "all", "args": "after-used" }]
+    "prettier/prettier": ["warn"],
+    "no-unused-vars": ["warn", { "vars": "all", "args": "after-used" }]
   }
 }
