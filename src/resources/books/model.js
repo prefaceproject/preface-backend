@@ -27,6 +27,6 @@ const bookSchema = new mongoose.Schema(
 )
 
 bookSchema.index({ title: 1 }, { unique: true })
-bookSchema.index({ author: 1 }, { unique: true })
+bookSchema.index({ author: 1 })
 
 export default mongoose.model('book', bookSchema)
