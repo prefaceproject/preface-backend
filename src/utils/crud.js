@@ -1,3 +1,5 @@
+// Sample code for basic CRUD operations for MongoDB Data Models
+
 exports.getOne = (model) => async (req, res) => {
   try {
     const doc = await model
