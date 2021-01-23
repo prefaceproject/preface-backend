@@ -1,13 +1,16 @@
-const express = require("express");
-const app = express();
-const port = process.env.PORT || 5000;
+const express = require('express')
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+const crud = require('./src/utils/crud')
 
-app.get("/test", (req, res) => {
-  res.send({ express: "Test call to backend" });
-});
+const app = express()
+const port = process.env.PORT || 5000
 
-app.get("/example_saga_request", (req, res) => {
-  res.send({ message: "Saga success" });
-});
+app.listen(port, () => console.log(`Listening on port ${port}`))
+
+app.get('/test', (req, res) => {
+  res.send({ express: 'Test call to backend' })
+})
+
+app.get('/example_saga_request', (req, res) => {
+  res.send({ message: 'Saga success ' })
+})
