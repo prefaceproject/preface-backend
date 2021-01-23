@@ -14,6 +14,8 @@ var _router3 = _interopRequireDefault(require("./resources/sessions/router.js"))
 
 var _router4 = _interopRequireDefault(require("./resources/students/router.js"));
 
+var _router5 = _interopRequireDefault(require("./auth/router.js"));
+
 var _resources = require("./resources");
 
 var _dotenv = _interopRequireDefault(require("dotenv"));
@@ -27,10 +29,12 @@ const port = process.env.PORT || 5000;
 app.use(_bodyParser.default.urlencoded({
   extended: true
 }));
+app.use(_express.default.json());
 app.use('/api/users', _router.default);
 app.use('/api/books', _router2.default);
 app.use('/api/sessions', _router3.default);
 app.use('/api/students', _router4.default);
+app.use('/api/auth', _router5.default);
 app.get('/test', (req, res) => {
   res.send({
     express: 'Test call to backend'
