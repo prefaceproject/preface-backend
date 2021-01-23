@@ -1,6 +1,6 @@
 // Sample code for basic CRUD operations for MongoDB Data Models
 
-exports.getOne = (model) => async (req, res) => {
+export const getOne = (model) => async (req, res) => {
   try {
     const doc = await model
       .findOne({ createdBy: req.user._id, _id: req.params.id })
@@ -18,7 +18,7 @@ exports.getOne = (model) => async (req, res) => {
   }
 }
 
-exports.getMany = (model) => async (req, res) => {
+export const getMany = (model) => async (req, res) => {
   try {
     const docs = await model.find({ createdBy: req.user._id }).lean().exec()
 
@@ -29,7 +29,7 @@ exports.getMany = (model) => async (req, res) => {
   }
 }
 
-exports.createOne = (model) => async (req, res) => {
+export const createOne = (model) => async (req, res) => {
   const createdBy = req.user._id
   try {
     const doc = await model.create({ ...req.body, createdBy })
@@ -40,7 +40,7 @@ exports.createOne = (model) => async (req, res) => {
   }
 }
 
-exports.updateOne = (model) => async (req, res) => {
+export const updateOne = (model) => async (req, res) => {
   try {
     const updatedDoc = await model
       .findOneAndUpdate(
@@ -65,7 +65,7 @@ exports.updateOne = (model) => async (req, res) => {
   }
 }
 
-exports.removeOne = (model) => async (req, res) => {
+export const removeOne = (model) => async (req, res) => {
   try {
     const removed = await model.findOneAndRemove({
       createdBy: req.user._id,
