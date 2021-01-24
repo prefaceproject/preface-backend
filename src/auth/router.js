@@ -39,11 +39,16 @@ router.post('/initialize', async (req, res, next) => {
 
   const finalUser = new User(user);
 
+
+//   finalUser.setPassword(user.password);
   return finalUser.save()
-    .then(() => res.json({ user: finalUser }));
+    .then(() => res.json({ user: finalUser.toAuthJSON() }))
+    .then(() => res.send({ success: true, message: 'initialize done' }))
+    .catch((e) => res.status(422).json({ success: false, errors: e, message: 'error saving user' }))
 });
 
-router.post('/register', (req, res, next) => {
+
+router.post('/register', async (req, res, next) => {
   const { body: { user } } = req;
 
   if(!user.email) {
@@ -54,73 +59,29 @@ router.post('/register', (req, res, next) => {
     });
   }
 
-  //email read in db
-  const fetchedUser = User.findOne({email: user.email}, (err, res) => {
-    // if (!res) {
-    //   res.send("error")
-    // }
-  })
+  if(!user.password) {
+    return res.status(422).json({
+      errors: {
+        password: 'is required',
+      },
+    });
+  }
 
-  // console.log(fetchedUser)
+  if(!user.firstName) {
+    return res.status(422).json({
+      errors: {
+        firstName: 'is required',
+      },
+    });
+  }
 
-  // if(!user.password) {
-  //   return res.status(422).json({
-  //     errors: {
-  //       password: 'is required',
-  //     },
-  //   });
-  // }
-
-  // // first name check
-  // if(!user.firstName) {
-  //   return res.status(422).json({
-  //     errors: {
-  //       firstName: 'is required',
-  //     },
-  //   });
-  // }
-
-  // // last name check
-  // if(!user.lastName) {
-  //   return res.status(422).json({
-  //     errors: {
-  //       lastName: 'is required',
-  //     },
-  //   });
-  // }
-
-  // // isRegistered check
-  // if(user.isRegistered) {
-  //   return res.status(422).json({
-  //     errors: {
-  //       isRegistered: 'is true',
-  //     },
-  //   });
-  // }
-
-  // // isActive check
-  // if(!user.isActive) {
-  //   return res.status(422).json({
-  //     errors: {
-  //       isActive: 'is false',
-  //     },
-  //   });
-  // }
-
-  //save updates to user object
-
-  // return passport.authenticate('local', { session: false }, (err, passportUser, info) => {
-  //   if(err) {
-  //     return next(err);
-  //   }
-
-  //   if(passportUser) {
-  //     const user = passportUser;
-  //     return res.json({ auth: 'success', user: user });
-  //   }
-
-  //   return res.json({ auth: 'failure' });
-  // })(req, res, next);
+  if(!user.lastName) {
+    return res.status(422).json({
+      errors: {
+        lastName: 'is required',
+      },
+    });
+  }
 
   const query = await User.find({email: user.email});
   if (query.length == 0){
