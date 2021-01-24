@@ -19,7 +19,7 @@ const User = _mongoose.default.model('user');
 
 const router = (0, _express.Router)();
 router.post('/initialize' // , auth.optional
-, (req, res, next) => {
+, async (req, res, next) => {
   const {
     body: {
       user
@@ -27,34 +27,48 @@ router.post('/initialize' // , auth.optional
   } = req;
 
   if (!user.email) {
-    const query = User.find({
-      email: user.email
+    return res.status(422).json({
+      success: false,
+      errors: {
+        email: 'is required'
+      }
     });
-
-    if (query.length != 0) {
-      return res.status(422).json({
-        errors: {
-          email: 'already exists'
-        }
-      });
-    }
   }
 
   if (!user.role) {
     return res.status(422).json({
+      success: false,
       errors: {
         role: 'is required'
       }
     });
   }
 
-  const finalUser = new User(user); //   finalUser.setPassword(user.password);
-  //   return finalUser.save()
-  //     .then(() => res.json({ user: finalUser.toAuthJSON() }));
-
-  res.send({
-    express: 'initialize done'
+  const query = await User.find({
+    email: user.email
   });
+
+  if (query.length != 0) {
+    return res.status(422).json({
+      success: false,
+      errors: {
+        email: 'already exists'
+      }
+    });
+  }
+
+  const finalUser = new User(user); //   finalUser.setPassword(user.password);
+
+  return finalUser.save().then(() => res.json({
+    user: finalUser.toAuthJSON()
+  })).then(() => res.send({
+    success: true,
+    message: 'initialize done'
+  })).catch(e => res.status(422).json({
+    success: false,
+    errors: e,
+    message: 'error saving user'
+  }));
 });
 var _default = router;
 exports.default = _default;
