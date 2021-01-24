@@ -174,5 +174,19 @@ function setPassword(password) {
   return saltAndHash
 };
 
+router.get('/current', auth.required, (req, res, next) => {
+  const { payload: { id } } = req;
+  console.log(id)
+  return User.findById(id)
+    .then((user) => {
+      if(!user) {
+        return res.sendStatus(400).json({success: false});
+      }
+
+      return res.json({ success: true, user: user.toAuthJSON() });
+    });
+});
+
+
 
 export default router
