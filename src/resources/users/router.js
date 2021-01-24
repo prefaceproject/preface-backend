@@ -59,15 +59,67 @@ router.post('/assign', async (req, res, next) => {
   const { body: { user, students } } = req;
 
   const query = await User.find({_id: user._id});
+
   User.updateOne({_id: query[0]._id}, {
     students: [...students, ...query[0].students]
   })
+  .then(() => res.send({ success: true }))
+  .catch((e) => res.status(422).json({ success: false, errors: e, message: 'error saving user' }))
+  
 });
 
-
 //remove students
+router.post('/remove', async (req, res, next) => {
+
+  const { body: { user, students } } = req;
+
+  const query = await User.find({_id: user._id});
+
+  const remainingStudents = query[0].students.filter(student => !students.includes(student.toString()))
+
+  User.updateOne({_id: query[0]._id}, {
+    students: remainingStudents
+  })
+  .then(() => res.send({ success: true }))
+  .catch((e) => res.status(422).json({ success: false, errors: e, message: 'error saving user' }))
+  
+});
 
 //deactivate users
+router.post('/deactivate', async (req, res, next) => {
+  const { body:  { user } } = req;
+  const query = await User.find({_id: user._id});
+  if (query.length == 0) {
+    return res.status(422).json({
+      success: false,
+      errors: { user: 'Does not exist',},
+    });
+  }
+  User.updateOne({_id: query[0]._id}, {
+    isActive: false
+  })
+  .then(() => res.send({ success: true }))
+  .catch((e) => res.status(422).json({ success: false, errors: e, message: 'error saving user' }))
+});
 
+// get all ambassadors, teachers
+router.post('/getAllFromRole', async (req, res, next) => {
+
+  const { body:  { user } } = req;
+
+  const list = await User.find({ role: user.role });
+
+  const filteredList = list.map((user) => {
+    return {
+      role: user.role,
+      students: user.students,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName
+    }
+  })
+
+  res.send({ success: true, list: filteredList })
+});
 
 export default router
