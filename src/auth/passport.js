@@ -7,7 +7,7 @@ The user model is imported to access the User Schema as a way to find the desire
 
 import mongoose from 'mongoose';
 import passport from 'passport';
-import { LocalStrategy } from 'passport-local';
+const LocalStrategy = require('passport-local');
 const User = mongoose.model('user');
 
 passport.use(new LocalStrategy({

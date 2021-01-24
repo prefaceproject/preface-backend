@@ -18,14 +18,20 @@ var _router5 = _interopRequireDefault(require("./auth/router.js"));
 
 var _resources = require("./resources");
 
+var _passport = _interopRequireDefault(require("./auth/passport"));
+
 var _dotenv = _interopRequireDefault(require("dotenv"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const cors = require('cors');
 
 _dotenv.default.config();
 
 const app = (0, _express.default)();
 const port = process.env.PORT || 5000;
+app.use(cors());
+app.use(require('morgan')('dev'));
 app.use(_bodyParser.default.urlencoded({
   extended: true
 }));
