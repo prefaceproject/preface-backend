@@ -34,12 +34,10 @@ const studentSchema = new mongoose.Schema(
     },
     classId: {
       type: mongoose.ObjectId,
-      required: true,
     },
     userId: {
       type: mongoose.ObjectId,
       ref: 'user',
-      required: true,
     },
     sessions: {
       type: Array,
