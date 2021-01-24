@@ -6,9 +6,10 @@ const crypto = require('crypto');
 const User = mongoose.model('user');
 
 const router = Router()
+import auth from "./auth"
 
 
-router.post('/initialize', async (req, res, next) => {
+router.post('/initialize', auth.optional, async (req, res, next) => {
 
   const { body: { user } } = req;
 
@@ -45,7 +46,7 @@ router.post('/initialize', async (req, res, next) => {
 });
 
 
-router.post('/register', async (req, res, next) => {
+router.post('/register', auth.optional, async (req, res, next) => {
   const { body: { user } } = req;
 
   if(!user.email) {
@@ -111,14 +112,12 @@ router.post('/register', async (req, res, next) => {
     salt: salt,
     hash: hash
   })
-  .then(() => res.send({ success: true, message: 'registration done' }))
+  .then(() => res.send({ success: true, user: query[0].toAuthJSON() }))
   .catch((e) => res.status(422).json({ success: false, errors: e, message: 'error registering user' }))
 });
 
-router.post('/login', async (req, res, next) => {
+router.post('/login', auth.optional, async (req, res, next) => {
   const { body: { user } } = req;
-
-  console.log(user)
 
   if(!user.email) {
     return res.status(422).json({

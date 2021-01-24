@@ -63,7 +63,7 @@ userSchema.methods.generateJWT = function() {
     email: this.email,
     id: this._id,
     exp: parseInt(expirationDate.getTime() / 1000, 10),
-  }, process.env.TOKEN_SECRET);
+  }, "test");
 }
 
 userSchema.methods.toAuthJSON = function() {

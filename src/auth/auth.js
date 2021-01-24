@@ -25,17 +25,20 @@ const getTokenFromHeaders = (req) => {
 auth middleware validates whether jwt token is present. Upon validation, the middleware sets req.user object
 userProperty is where the payload will be attached
 */
+
 const auth = {
   required: jwt({
-    secret: process.env.TOKEN_SECRET,
+    secret: "test",
     userProperty: 'payload',
     getToken: getTokenFromHeaders,
+    algorithms: ['HS256']
   }),
   optional: jwt({
-    secret: process.env.TOKEN_SECRET,
+    secret: "test",
     userProperty: 'payload',
     getToken: getTokenFromHeaders,
     credentialsRequired: false,
+    algorithms: ['HS256']
   }),
 };
 
