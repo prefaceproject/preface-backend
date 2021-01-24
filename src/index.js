@@ -9,12 +9,18 @@ import studentsRouter from './resources/students/router.js'
 import authRouter from './auth/router.js'
 import { connectDb } from './resources'
 
+const cors = require('cors');
+import passport from './auth/passport';
+
+
 import dotenv from 'dotenv'
 
 dotenv.config()
 
 const app = express()
 const port = process.env.PORT || 5000
+app.use(cors());
+app.use(require('morgan')('dev'));
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(express.json());

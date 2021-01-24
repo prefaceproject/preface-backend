@@ -4,8 +4,6 @@ var _mongoose = _interopRequireDefault(require("mongoose"));
 
 var _passport = _interopRequireDefault(require("passport"));
 
-var _passportLocal = require("passport-local");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /*
@@ -14,9 +12,11 @@ If authentication is successful, the user object is returned. If authentication 
 LocalStrategy has the functionality of checking the usernameField and the passwordField to authenticate user information.
 The user model is imported to access the User Schema as a way to find the desired user object.
 */
+const LocalStrategy = require('passport-local');
+
 const User = _mongoose.default.model('user');
 
-_passport.default.use(new _passportLocal.LocalStrategy({
+_passport.default.use(new LocalStrategy({
   usernameField: 'user[email]',
   passwordField: 'user[password]'
 }, (email, password, done) => {

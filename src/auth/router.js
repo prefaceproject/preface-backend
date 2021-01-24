@@ -1,15 +1,12 @@
 import { Router } from 'express'
 import mongoose from 'mongoose'
 import passport from 'passport'
-import auth from './auth'
 
 const User = mongoose.model('user');
 
 const router = Router()
 
-router.post('/initialize'
-// , auth.optional
-, (req, res, next) => {
+router.post('/initialize', (req, res, next) => {
   console.log(req.body)
   const { body: { user } } = req;
 
@@ -29,14 +26,92 @@ router.post('/initialize'
     });
   }
 
-//   const finalUser = new User(user);
+  const finalUser = new User(user);
 
-//   finalUser.setPassword(user.password);
+  return finalUser.save()
+    .then(() => res.json({ user: finalUser }));
+});
 
-//   return finalUser.save()
-//     .then(() => res.json({ user: finalUser.toAuthJSON() }));
+router.post('/register', (req, res, next) => {
+  const { body: { user } } = req;
 
-  res.send({ express: 'initialize done' })
+  if(!user.email) {
+    return res.status(422).json({
+      errors: {
+        email: 'is required',
+      },
+    });
+  }
+
+  //email read in db
+  const fetchedUser = User.findOne({email: user.email}, (err, res) => {
+    // if (!res) {
+    //   res.send("error")
+    // }
+  })
+
+  // console.log(fetchedUser)
+
+  // if(!user.password) {
+  //   return res.status(422).json({
+  //     errors: {
+  //       password: 'is required',
+  //     },
+  //   });
+  // }
+
+  // // first name check
+  // if(!user.firstName) {
+  //   return res.status(422).json({
+  //     errors: {
+  //       firstName: 'is required',
+  //     },
+  //   });
+  // }
+
+  // // last name check
+  // if(!user.lastName) {
+  //   return res.status(422).json({
+  //     errors: {
+  //       lastName: 'is required',
+  //     },
+  //   });
+  // }
+
+  // // isRegistered check
+  // if(user.isRegistered) {
+  //   return res.status(422).json({
+  //     errors: {
+  //       isRegistered: 'is true',
+  //     },
+  //   });
+  // }
+
+  // // isActive check
+  // if(!user.isActive) {
+  //   return res.status(422).json({
+  //     errors: {
+  //       isActive: 'is false',
+  //     },
+  //   });
+  // }
+
+  //save updates to user object
+
+  // return passport.authenticate('local', { session: false }, (err, passportUser, info) => {
+  //   if(err) {
+  //     return next(err);
+  //   }
+
+  //   if(passportUser) {
+  //     const user = passportUser;
+  //     return res.json({ auth: 'success', user: user });
+  //   }
+
+  //   return res.json({ auth: 'failure' });
+  // })(req, res, next);
+
+  res.send({ express: 'Test call to backend' })
 });
 
 export default router
