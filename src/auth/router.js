@@ -177,4 +177,8 @@ function setPassword(password) {
 };
 
 
+<<<<<<< HEAD
 export default router
+=======
+export default router
+>>>>>>> 78d28844fb42a9963f98fd944a139b6e9f083987
