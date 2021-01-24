@@ -6,33 +6,48 @@ const User = mongoose.model('user');
 
 const router = Router()
 
-router.post('/initialize', (req, res, next) => {
-  console.log(req.body)
+
+router.post('/initialize', async (req, res, next) => {
+
   const { body: { user } } = req;
 
   if(!user.email) {
     return res.status(422).json({
-      errors: {
-        email: 'is required',
-      },
+      success: false,
+      errors: { email: 'is required',},
     });
   }
 
   if(!user.role) {
     return res.status(422).json({
+      success: false,
       errors: {
         role: 'is required',
       },
     });
   }
 
+  const query = await User.find({email: user.email});
+  if (query.length != 0){
+    return res.status(422).json({
+      success: false,
+      errors: { email: 'already exists',},
+    });
+  }
+
+
   const finalUser = new User(user);
 
+
+//   finalUser.setPassword(user.password);
   return finalUser.save()
-    .then(() => res.json({ user: finalUser }));
+    .then(() => res.json({ user: finalUser.toAuthJSON() }))
+    .then(() => res.send({ success: true, message: 'initialize done' }))
+    .catch((e) => res.status(422).json({ success: false, errors: e, message: 'error saving user' }))
 });
 
-router.post('/register', (req, res, next) => {
+
+router.post('/register', async (req, res, next) => {
   const { body: { user } } = req;
 
   if(!user.email) {
@@ -43,75 +58,55 @@ router.post('/register', (req, res, next) => {
     });
   }
 
-  //email read in db
-  const fetchedUser = User.findOne({email: user.email}, (err, res) => {
-    // if (!res) {
-    //   res.send("error")
-    // }
-  })
+  if(!user.password) {
+    return res.status(422).json({
+      errors: {
+        password: 'is required',
+      },
+    });
+  }
 
-  // console.log(fetchedUser)
+  if(!user.firstName) {
+    return res.status(422).json({
+      errors: {
+        firstName: 'is required',
+      },
+    });
+  }
 
-  // if(!user.password) {
-  //   return res.status(422).json({
-  //     errors: {
-  //       password: 'is required',
-  //     },
-  //   });
-  // }
+  if(!user.lastName) {
+    return res.status(422).json({
+      errors: {
+        lastName: 'is required',
+      },
+    });
+  }
 
-  // // first name check
-  // if(!user.firstName) {
-  //   return res.status(422).json({
-  //     errors: {
-  //       firstName: 'is required',
-  //     },
-  //   });
-  // }
+  const query = await User.find({email: user.email});
+  if (query.length == 0){
+    return res.status(422).json({
+      success: false,
+      errors: { email: 'not registered',},
+    });
+  }
 
-  // // last name check
-  // if(!user.lastName) {
-  //   return res.status(422).json({
-  //     errors: {
-  //       lastName: 'is required',
-  //     },
-  //   });
-  // }
+  if (!query[0].isActive) {
+    return res.status(422).json({
+      success: false,
+      errors: { user: 'not active',},
+    });
+  }
 
-  // // isRegistered check
-  // if(user.isRegistered) {
-  //   return res.status(422).json({
-  //     errors: {
-  //       isRegistered: 'is true',
-  //     },
-  //   });
-  // }
+  if (query[0].isRegistered) {
+    return res.status(422).json({
+      success: false,
+      errors: { user: 'already registered',},
+    });
+  }
 
-  // // isActive check
-  // if(!user.isActive) {
-  //   return res.status(422).json({
-  //     errors: {
-  //       isActive: 'is false',
-  //     },
-  //   });
-  // }
-
-  //save updates to user object
-
-  // return passport.authenticate('local', { session: false }, (err, passportUser, info) => {
-  //   if(err) {
-  //     return next(err);
-  //   }
-
-  //   if(passportUser) {
-  //     const user = passportUser;
-  //     return res.json({ auth: 'success', user: user });
-  //   }
-
-  //   return res.json({ auth: 'failure' });
-  // })(req, res, next);
-
+  //salt and hash, then save
   res.send({ express: 'Test call to backend' })
-});
+})
+
 
 export default router

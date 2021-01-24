@@ -16,8 +16,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const User = _mongoose.default.model('user');
 
 const router = (0, _express.Router)();
-router.post('/initialize', (req, res, next) => {
-  console.log(req.body);
+router.post('/initialize', async (req, res, next) => {
   const {
     body: {
       user
@@ -26,6 +25,7 @@ router.post('/initialize', (req, res, next) => {
 
   if (!user.email) {
     return res.status(422).json({
+      success: false,
       errors: {
         email: 'is required'
       }
@@ -34,18 +34,40 @@ router.post('/initialize', (req, res, next) => {
 
   if (!user.role) {
     return res.status(422).json({
+      success: false,
       errors: {
         role: 'is required'
       }
     });
   }
 
-  const finalUser = new User(user);
+  const query = await User.find({
+    email: user.email
+  });
+
+  if (query.length != 0) {
+    return res.status(422).json({
+      success: false,
+      errors: {
+        email: 'already exists'
+      }
+    });
+  }
+
+  const finalUser = new User(user); //   finalUser.setPassword(user.password);
+
   return finalUser.save().then(() => res.json({
-    user: finalUser
+    user: finalUser.toAuthJSON()
+  })).then(() => res.send({
+    success: true,
+    message: 'initialize done'
+  })).catch(e => res.status(422).json({
+    success: false,
+    errors: e,
+    message: 'error saving user'
   }));
 });
-router.post('/register', (req, res, next) => {
+router.post('/register', async (req, res, next) => {
   const {
     body: {
       user
@@ -58,65 +80,63 @@ router.post('/register', (req, res, next) => {
         email: 'is required'
       }
     });
-  } //email read in db
+  }
 
+  if (!user.password) {
+    return res.status(422).json({
+      errors: {
+        password: 'is required'
+      }
+    });
+  }
 
-  const fetchedUser = User.findOne({
+  if (!user.firstName) {
+    return res.status(422).json({
+      errors: {
+        firstName: 'is required'
+      }
+    });
+  }
+
+  if (!user.lastName) {
+    return res.status(422).json({
+      errors: {
+        lastName: 'is required'
+      }
+    });
+  }
+
+  const query = await User.find({
     email: user.email
-  }, (err, res) => {// if (!res) {
-    //   res.send("error")
-    // }
-  }); // console.log(fetchedUser)
-  // if(!user.password) {
-  //   return res.status(422).json({
-  //     errors: {
-  //       password: 'is required',
-  //     },
-  //   });
-  // }
-  // // first name check
-  // if(!user.firstName) {
-  //   return res.status(422).json({
-  //     errors: {
-  //       firstName: 'is required',
-  //     },
-  //   });
-  // }
-  // // last name check
-  // if(!user.lastName) {
-  //   return res.status(422).json({
-  //     errors: {
-  //       lastName: 'is required',
-  //     },
-  //   });
-  // }
-  // // isRegistered check
-  // if(user.isRegistered) {
-  //   return res.status(422).json({
-  //     errors: {
-  //       isRegistered: 'is true',
-  //     },
-  //   });
-  // }
-  // // isActive check
-  // if(!user.isActive) {
-  //   return res.status(422).json({
-  //     errors: {
-  //       isActive: 'is false',
-  //     },
-  //   });
-  // }
-  //save updates to user object
-  // return passport.authenticate('local', { session: false }, (err, passportUser, info) => {
-  //   if(err) {
-  //     return next(err);
-  //   }
-  //   if(passportUser) {
-  //     const user = passportUser;
-  //     return res.json({ auth: 'success', user: user });
-  //   }
-  //   return res.json({ auth: 'failure' });
-  // })(req, res, next);
+  });
+
+  if (query.length == 0) {
+    return res.status(422).json({
+      success: false,
+      errors: {
+        email: 'not registered'
+      }
+    });
+  }
+
+  if (!query[0].isActive) {
+    return res.status(422).json({
+      success: false,
+      errors: {
+        user: 'not active'
+      }
+    });
+  }
+
+  if (query[0].isRegistered) {
+    return res.status(422).json({
+      success: false,
+      errors: {
+        user: 'already registered'
+      }
+    });
+  } //salt and hash, then save
+
 
   res.send({
     express: 'Test call to backend'
