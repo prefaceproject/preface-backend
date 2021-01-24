@@ -7,19 +7,24 @@ const User = mongoose.model('user');
 
 const router = Router()
 
+
 router.post('/initialize'
 // , auth.optional
 , (req, res, next) => {
-  console.log(req.body)
+
   const { body: { user } } = req;
 
   if(!user.email) {
-    return res.status(422).json({
-      errors: {
-        email: 'is required',
-      },
-    });
-  }
+    const query = User.find({email: user.email});
+    if (query.length != 0){
+      return res.status(422).json({
+        errors: { email: 'already exists',},
+
+      });
+    }
+
+    }
+
 
   if(!user.role) {
     return res.status(422).json({
@@ -29,7 +34,10 @@ router.post('/initialize'
     });
   }
 
-//   const finalUser = new User(user);
+
+
+  const finalUser = new User(user);
+
 
 //   finalUser.setPassword(user.password);
 
@@ -38,5 +46,6 @@ router.post('/initialize'
 
   res.send({ express: 'initialize done' })
 });
+
 
 export default router
