@@ -118,6 +118,8 @@ router.post('/register', async (req, res, next) => {
 router.post('/login', async (req, res, next) => {
   const { body: { user } } = req;
 
+  console.log(user)
+
   if(!user.email) {
     return res.status(422).json({
       errors: {
