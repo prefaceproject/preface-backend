@@ -7,9 +7,6 @@ const User = mongoose.model('user');
 const router = Router()
 import auth from "./auth"
 
-
-
-
 router.post('/register', auth.optional, async (req, res, next) => {
   const { body: { user } } = req;
 
