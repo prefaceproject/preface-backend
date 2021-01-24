@@ -39,11 +39,8 @@ router.post('/initialize', async (req, res, next) => {
 
   const finalUser = new User(user);
 
-
-//   finalUser.setPassword(user.password);
   return finalUser.save()
-    .then(() => res.json({ user: finalUser.toAuthJSON() }))
-    .then(() => res.send({ success: true, message: 'initialize done' }))
+    .then(() => res.send({ success: true, user: finalUser.toAuthJSON() }))
     .catch((e) => res.status(422).json({ success: false, errors: e, message: 'error saving user' }))
 });
 
@@ -120,6 +117,8 @@ router.post('/register', async (req, res, next) => {
 
 router.post('/login', async (req, res, next) => {
   const { body: { user } } = req;
+
+  console.log(user)
 
   if(!user.email) {
     return res.status(422).json({
