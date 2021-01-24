@@ -17,7 +17,6 @@ const User = _mongoose.default.model('user');
 
 const router = (0, _express.Router)();
 router.post('/initialize', (req, res, next) => {
-  console.log(req.body);
   const {
     body: {
       user
@@ -25,11 +24,17 @@ router.post('/initialize', (req, res, next) => {
   } = req;
 
   if (!user.email) {
-    return res.status(422).json({
-      errors: {
-        email: 'is required'
-      }
+    const query = User.find({
+      email: user.email
     });
+
+    if (query.length != 0) {
+      return res.status(422).json({
+        errors: {
+          email: 'already exists'
+        }
+      });
+    }
   }
 
   if (!user.role) {
