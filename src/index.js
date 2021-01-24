@@ -10,7 +10,6 @@ import authRouter from './auth/router.js'
 import { connectDb } from './resources'
 
 const cors = require('cors');
-import passport from './auth/passport';
 
 
 import dotenv from 'dotenv'

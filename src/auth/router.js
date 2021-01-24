@@ -1,6 +1,5 @@
 import { Router } from 'express'
 import mongoose from 'mongoose'
-import passport from 'passport'
 const crypto = require('crypto');
 
 const User = mongoose.model('user');
