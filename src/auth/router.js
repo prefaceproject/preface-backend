@@ -6,28 +6,35 @@ const User = mongoose.model('user');
 
 const router = Router()
 
-router.post('/initialize', (req, res, next) => {
+
+router.post('/initialize', async (req, res, next) => {
+
   const { body: { user } } = req;
 
   if(!user.email) {
-    const query = User.find({email: user.email});
-    if (query.length != 0){
-      return res.status(422).json({
-        errors: { email: 'already exists',},
-
-      });
-    }
-
-    }
-
+    return res.status(422).json({
+      success: false,
+      errors: { email: 'is required',},
+    });
+  }
 
   if(!user.role) {
     return res.status(422).json({
+      success: false,
       errors: {
         role: 'is required',
       },
     });
   }
+
+  const query = await User.find({email: user.email});
+  if (query.length != 0){
+    return res.status(422).json({
+      success: false,
+      errors: { email: 'already exists',},
+    });
+  }
+
 
   const finalUser = new User(user);
 
@@ -115,6 +122,11 @@ router.post('/register', (req, res, next) => {
   // })(req, res, next);
 
   res.send({ express: 'Test call to backend' })
+//   finalUser.setPassword(user.password);
+  return finalUser.save()
+    .then(() => res.json({ user: finalUser.toAuthJSON() }))
+    .then(() => res.send({ success: true, message: 'initialize done' }))
+    .catch((e) => res.status(422).json({ success: false, errors: e, message: 'error saving user' }))
 });
 
 
