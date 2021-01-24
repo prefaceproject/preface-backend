@@ -22,10 +22,7 @@ const port = process.env.PORT || 5000
 app.use(cors());
 app.use(require('morgan')('dev'));
 app.use(bodyParser.urlencoded({ extended: true }))
-<<<<<<< HEAD
-=======
 app.use(bodyParser.json())
->>>>>>> 78d28844fb42a9963f98fd944a139b6e9f083987
 app.use(express.json());
 
 app.use('/api/users', usersRouter)

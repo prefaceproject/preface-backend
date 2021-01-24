@@ -39,11 +39,8 @@ router.post('/initialize', async (req, res, next) => {
 
   const finalUser = new User(user);
 
-
-//   finalUser.setPassword(user.password);
   return finalUser.save()
-    .then(() => res.json({ user: finalUser.toAuthJSON() }))
-    .then(() => res.send({ success: true, message: 'initialize done' }))
+    .then(() => res.send({ success: true, user: finalUser.toAuthJSON() }))
     .catch((e) => res.status(422).json({ success: false, errors: e, message: 'error saving user' }))
 });
 
@@ -177,8 +174,4 @@ function setPassword(password) {
 };
 
 
-<<<<<<< HEAD
 export default router
-=======
-export default router
->>>>>>> 78d28844fb42a9963f98fd944a139b6e9f083987
