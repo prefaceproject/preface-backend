@@ -42,8 +42,9 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     students: {
-      type: Array,
+      type: [{ type : mongoose.ObjectId, ref: 'student' }],
       default: [],
+      ref: 'student',
     },
   },
   { timestamps: true }
