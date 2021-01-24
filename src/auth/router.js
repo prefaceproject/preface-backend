@@ -96,7 +96,7 @@ router.post('/login', auth.optional, async (req, res, next) => {
     });
   }
 
-  const query = await User.find({email: user.email});
+  const query = await User.find({email: user.email}).populate('students');
   if (query.length == 0){
     return res.status(422).json({
       success: false,
@@ -138,7 +138,7 @@ function setPassword(password) {
 router.get('/current', auth.required, (req, res, next) => {
   const { payload: { id } } = req;
   console.log(id)
-  return User.findById(id)
+  return User.findById(id).populate('students')
     .then((user) => {
       if(!user) {
         return res.sendStatus(400).json({success: false});
