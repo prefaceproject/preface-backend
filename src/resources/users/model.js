@@ -71,6 +71,10 @@ userSchema.methods.toAuthJSON = function() {
     _id: this._id,
     email: this.email,
     token: this.generateJWT(),
+    firstName: this.firstName,
+    lastName: this.lastName,
+    role: this.role,
+    students: this.students
   };
 };
 
