@@ -12,8 +12,6 @@ router
   .delete((req, res) => {})
 
 
-
-
 //admin
 
 //create users (initialize) and optionally assign students
@@ -105,9 +103,11 @@ router.post('/deactivate', async (req, res, next) => {
 // get all ambassadors, teachers
 router.post('/getAllFromRole', async (req, res, next) => {
 
-  const { body:  { user } } = req;
+  const { body:  { role } } = req;
 
-  const list = await User.find({ role: user.role });
+  console.log("res", role)
+
+  const list = await User.find({ role: role });
 
   const filteredList = list.map((user) => {
     return {
