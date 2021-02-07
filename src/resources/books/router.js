@@ -1,7 +1,6 @@
 import { Router } from 'express'
 
 import { Book } from '../'
-import { ObjectId } from '../../utils/db'
 
 const router = Router()
 

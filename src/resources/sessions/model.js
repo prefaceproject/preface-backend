@@ -20,6 +20,14 @@ const sessionSchema = new mongoose.Schema(
       ref: 'student',
       required: true,
     },
+    comprehensionLevel: {
+      type: mongoose.SchemaTypes.Number,
+      required: true,
+    },
+    date: {
+      type: mongoose.SchemaTypes.Date,
+      required: true,
+    },
   },
   { timestamps: true }
 )

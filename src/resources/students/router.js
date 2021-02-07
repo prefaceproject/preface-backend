@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { Student } from '../'
+import { Student, Session } from '../'
 
 const router = Router()
 
@@ -90,6 +90,14 @@ router
     }
   })
 
-router.route('/:studentId/sessions').get((req, res) => {})
+router.route('/:id/sessions').get(async (req, res) => {
+  const studentId = req.params.id
+  try {
+    const students = await Session.find({ studentId: studentId })
+    res.status(200).send({ data: students })
+  } catch (error) {
+    res.status(500).send(error)
+  }
+})
 
 export default router
