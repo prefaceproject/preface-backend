@@ -16,7 +16,6 @@ router
 
 //create users (initialize) and optionally assign students
 router.post('/initialize', async (req, res, next) => {
-
   const { body: { user } } = req;
 
   if(!user.email) {
@@ -109,17 +108,43 @@ router.post('/getAllFromRole', async (req, res, next) => {
 
   const list = await User.find({ role: role });
 
+  console.log("in getAllFromRole", list)
   const filteredList = list.map((user) => {
     return {
       role: user.role,
       students: user.students,
       email: user.email,
       firstName: user.firstName,
-      lastName: user.lastName
+      lastName: user.lastName,
+      isActive: user.isActive
     }
   })
 
   res.send({ success: true, list: filteredList })
 });
+
+router.post('/update', async (req, res, next) => {
+
+  const { body: { user } } = req;
+  const query = await User.find({_id: user._id});
+  if (query.length == 0) {
+    return res.status(422).json({
+      success: false,
+      errors: { user: 'Does not exist',},
+    });
+  }
+  User.updateOne({_id: query[0]._id}, {
+    role: user.role,
+    students: user.students,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    isActive: user.isActive
+  })
+  .then(() => res.send({ success: true }))
+  .catch((e) => res.status(422).json({ success: false, errors: e, message: 'error saving user' }))
+
+
+})
 
 export default router
