@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { Student, Session } from '../'
+import { Student, Session, User } from '../'
 
 const router = Router()
 
@@ -7,13 +7,34 @@ router
   .route('/')
   .get(async (req, res) => {
     try {
-      const students = await Student.find({}).lean().exec()
 
-      if (!students) {
-        res.status(404).end()
+      const query = await User.findOne({_id: req.query._id});
+      if (query.length == 0) {
+        return res.status(422).json({
+          success: false,
+          errors: { user: 'Does not exist',},
+        });
       }
 
-      res.status(200).json(students)
+      if (query.role == 'admin') {
+        const students = await Student.find({}).lean().exec()
+
+        if (!students) {
+          res.status(404).end()
+        }
+
+        res.status(200).json(students)
+
+      } else {
+        const students = await Student.find({"_id" : {"$in" : query.students}}).lean().exec()
+
+        if (!students) {
+          res.status(404).end()
+        }
+
+        res.status(200).json(students)
+      }
+      
     } catch (error) {
       console.error(error)
       res.status(500).send(error)
