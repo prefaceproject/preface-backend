@@ -104,11 +104,11 @@ router.post('/getAllFromRole', async (req, res, next) => {
 
   const { body:  { role } } = req;
 
-  console.log("res", role)
+  // console.log("res", role)
 
   const list = await User.find({ role: role });
 
-  console.log("in getAllFromRole", list)
+  // console.log("in getAllFromRole", list)
   const filteredList = list.map((user) => {
     return {
       role: user.role,
