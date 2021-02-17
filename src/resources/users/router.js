@@ -18,6 +18,8 @@ router
 router.post('/initialize', async (req, res, next) => {
   const { body: { user } } = req;
 
+  console.log("user", user)
+
   if(!user.email) {
     return res.status(422).json({
       success: false,
@@ -45,7 +47,7 @@ router.post('/initialize', async (req, res, next) => {
   const finalUser = new User(user);
 
   return finalUser.save()
-    .then(() => res.send({ success: true, user: finalUser.toAuthJSON() }))
+    .then(() => res.send({ success: "true", user: finalUser.toAuthJSON() }))
     .catch((e) => res.status(422).json({ success: false, errors: e, message: 'error saving user' }))
 });
 

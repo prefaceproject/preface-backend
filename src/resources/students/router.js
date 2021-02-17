@@ -42,6 +42,8 @@ router
   })
   .post(async (req, res) => {
     try {
+
+      console.log(req.body)
       const student = await Student.create({ ...req.body })
       if (!student) {
         res.status(404).end()
