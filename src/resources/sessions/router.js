@@ -7,8 +7,7 @@ router
   .route('/')
   .get( async (req, res) => {
     try {
-      const sessions = await Session.find({})
-
+      const sessions = await Session.find({}).sort({date: -1})
       res.status(200).json({ data: sessions })
     } catch (e) {
       console.error(e)
@@ -32,6 +31,7 @@ router
     try {
       const session = await Session
       .findById({ _id: req.params.id })
+      .sort({date: -1})
       .lean()
       .exec()
       
@@ -72,5 +72,28 @@ router
       console.error(e)
       res.status(400).end()
     }
-  })
+  });
+
+// get sessions based off of studentid, sorted by date
+router.post('/getAllByStudent', async (req, res, next) => {
+
+  const { studentId: { student } } = req;
+
+  console.log("res", student)
+
+  const list = await Session.find({ studentId: student });
+  if (list.length == 0){
+    return res.status(422).json({
+      success: false,
+      errors: {student: 'does not exist'},
+    });
+  }
+
+  res.send({ success: true, list: list})
+});
+
+router.get('/checkStudent', async (req, resp, next) => {
+  console.log("checking")
+});
+
 export default router
