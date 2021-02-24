@@ -135,9 +135,7 @@ function setPassword(password) {
   return saltAndHash
 };
 
-router.get('/test', auth.optional, (req, res, next) => res.send({success: true}))
-
-router.post('/updatepassword', auth.required, async (req, res, next) => {
+router.post('/updatepassword', auth.optional, async (req, res, next) => {
   const { body: { user } } = req; 
   
   const query = await User.find({email: user.email});
