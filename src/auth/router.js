@@ -141,7 +141,7 @@ router.post('/updatepassword', auth.optional, async (req, res, next) => {
   const query = await User.find({email: user.email});
 
   if (!query[0].validatePassword(user.password)) {
-    return res.status(422).json({
+    return res.send({
       success: false,
       message: "Incorrect password entered",
     });
