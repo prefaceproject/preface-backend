@@ -67,7 +67,7 @@ router
         res.status(404).end()
       }
 
-      res.status(200).json({ student })
+      res.status(200).json({ data: student })
     } catch (error) {
       console.error(error)
       res.status(500).send(error)
