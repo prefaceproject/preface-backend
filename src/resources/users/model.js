@@ -75,7 +75,9 @@ userSchema.methods.toAuthJSON = function() {
     firstName: this.firstName,
     lastName: this.lastName,
     role: this.role,
-    students: this.students
+    students: this.students,
+    school: this.school,
+    languagesSpoken: this.languagesSpoken
   };
 };
 
