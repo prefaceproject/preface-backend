@@ -168,23 +168,20 @@ router.post('/update', async (req, res, next) => {
       errors: { user: 'Does not exist' },
     })
   }
-  User.updateOne(
-    { _id: query[0]._id },
-    {
-      role: user.role,
-      students: user.students,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      isActive: user.isActive,
-    }
-  )
-    .then(() => res.send({ success: true }))
-    .catch((e) =>
-      res
-        .status(422)
-        .json({ success: false, errors: e, message: 'error saving user' })
-    )
+  User.updateOne({_id: query[0]._id}, {
+    role: user.role,
+    students: user.students,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    isActive: user.isActive,
+    languagesSpoken: user.languagesSpoken,
+    school: user.school
+  })
+  .then(() => res.send({ success: true }))
+  .catch((e) => res.status(422).json({ success: false, errors: e, message: 'error saving user' }))
+
+
 })
 
 export default router
