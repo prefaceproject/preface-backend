@@ -74,6 +74,7 @@ userSchema.methods.toAuthJSON = function() {
     token: this.generateJWT(),
     firstName: this.firstName,
     lastName: this.lastName,
+    isActive: this.isActive,
     role: this.role,
     students: this.students,
     school: this.school,
