@@ -135,6 +135,29 @@ function setPassword(password) {
   return saltAndHash
 };
 
+router.post('/updatepassword', auth.optional, async (req, res, next) => {
+  const { body: { user } } = req; 
+  
+  const query = await User.find({email: user.email});
+
+  if (!query[0].validatePassword(user.password)) {
+    return res.send({
+      success: false,
+      message: "Incorrect password entered",
+    });
+  }
+
+  const {salt, hash} = setPassword(user.newPassword)
+
+  return User.updateOne({_id: query[0]._id}, {
+    salt: salt,
+    hash: hash
+  })
+  .then(() => res.send({ success: true, message: "Successfully updated password!"}))
+  .catch((e) => res.status(422).json({ success: false, errors: e, message: "Error updating password" }))
+
+});
+
 router.get('/current', auth.required, (req, res, next) => {
   const { payload: { id } } = req;
   console.log(id)

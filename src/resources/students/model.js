@@ -25,7 +25,6 @@ const studentSchema = new mongoose.Schema(
     joinDate: {
       type: Date,
       trim: true,
-      required: true,
     },
     school: {
       type: String,
