@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { Student } from '../'
 
 const sessionSchema = new mongoose.Schema(
   {
@@ -31,5 +32,19 @@ const sessionSchema = new mongoose.Schema(
   },
   { timestamps: true }
 )
+
+sessionSchema.post('save', async function () {
+  await Student.updateOne(
+    { _id: this.studentId },
+    { $push: { sessions: this._id } }
+  )
+})
+
+sessionSchema.post('findOneAndDelete', async function (session) {
+  await Student.updateOne(
+    { _id: session.studentId },
+    { $pull: { sessions: session._id } }
+  )
+})
 
 export default mongoose.model('session', sessionSchema)
