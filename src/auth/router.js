@@ -158,6 +158,29 @@ router.post('/updatepassword', auth.optional, async (req, res, next) => {
 
 });
 
+router.post('/resetuserpassword', auth.optional, async (req, res, next) => {
+  const { body: { adminUser,  user} } = req; 
+
+  const adminQuery = await User.find({email: adminUser.email});
+  if (adminQuery[0].role !== 'admin') {
+    return res.send({
+      success: false,
+      message: "Only admins are eligible to reset passwords",
+    });
+  }
+
+  const query = await User.find({email: user.email});
+  const {salt, hash} = setPassword(user.newPassword)
+
+  return User.updateOne({_id: query[0]._id}, {
+    salt: salt,
+    hash: hash
+  })
+  .then(() => res.send({ success: true, message: "Successfully reset password!"}))
+  .catch((e) => res.status(422).json({ success: false, errors: e, message: "Error resetting password" }))
+
+});
+
 router.get('/current', auth.required, (req, res, next) => {
   const { payload: { id } } = req;
   console.log(id)
