@@ -161,6 +161,7 @@ router.post('/update', async (req, res, next) => {
   const {
     body: { user },
   } = req
+  console.log("in update backend")
   const query = await User.find({ _id: user._id })
   if (query.length == 0) {
     return res.status(422).json({
@@ -178,8 +179,8 @@ router.post('/update', async (req, res, next) => {
     languagesSpoken: user.languagesSpoken,
     school: user.school
   })
-  .then(() => res.send({ success: true }))
-  .catch((e) => res.status(422).json({ success: false, errors: e, message: 'error saving user' }))
+  .then(() => res.send({ success: true, message: 'User profile successfully saved!' }))
+  .catch((e) => res.status(422).json({ success: false, errors: e, message: 'Error saving user profile' }))
 
 
 })
