@@ -11,56 +11,52 @@ router.post('/register', auth.optional, async (req, res, next) => {
   const { body: { user } } = req;
 
   if(!user.email) {
-    return res.status(422).json({
-      errors: {
-        email: 'is required',
-      },
+    return res.json({
+      success: false,
+      errors: 'email: is required'
     });
   }
 
   if(!user.password) {
-    return res.status(422).json({
-      errors: {
-        password: 'is required',
-      },
+    return res.json({
+      success: false,
+      errors: 'password is required'
     });
   }
 
   if(!user.firstName) {
-    return res.status(422).json({
-      errors: {
-        firstName: 'is required',
-      },
+    return res.json({
+      success: false,
+      errors: 'firstName is required'
     });
   }
 
   if(!user.lastName) {
-    return res.status(422).json({
-      errors: {
-        lastName: 'is required',
-      },
+    return res.json({
+      success: false,
+      errors: 'lastName is required'
     });
   }
 
   const query = await User.find({email: user.email});
   if (query.length == 0){
-    return res.status(422).json({
+    return res.json({
       success: false,
-      errors: { email: 'not registered',},
+      errors: 'email not registered'
     });
   }
 
   if (!query[0].isActive) {
-    return res.status(422).json({
+    return res.json({
       success: false,
-      errors: { user: 'not active',},
+      errors: 'user not active'
     });
   }
 
   if (query[0].isRegistered) {
-    return res.status(422).json({
+    return res.json({
       success: false,
-      errors: { user: 'already registered',},
+      errors: 'user already registered'
     });
   }
 
@@ -74,7 +70,7 @@ router.post('/register', auth.optional, async (req, res, next) => {
     hash: hash
   })
   .then(() => res.send({ success: true, user: query[0].toAuthJSON() }))
-  .catch((e) => res.status(422).json({ success: false, errors: e, message: 'error registering user' }))
+  .catch((e) => res.json({ success: false, errors: e, message: 'error registering user' }))
 });
 
 router.post('/login', auth.optional, async (req, res, next) => {
