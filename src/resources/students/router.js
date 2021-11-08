@@ -1,6 +1,11 @@
 import { Router } from 'express'
 import { Types } from 'mongoose'
 import { Student, Session, User } from '../'
+import {
+  extractQueryParams,
+  paginatedQuery,
+  constructSearchQuery,
+} from '../utils'
 
 const router = Router()
 
@@ -8,33 +13,29 @@ router
   .route('/')
   .get(async (req, res) => {
     try {
-      const query = await User.findOne({ _id: req.query._id })
-      if (query.length == 0) {
+      const { searchTerm, ...options } = extractQueryParams(req)
+
+      const query = searchTerm
+        ? constructSearchQuery(['firstName', 'lastName', 'school'], searchTerm)
+        : {}
+
+      const user = await User.findOne({ _id: req.query._id })
+      if (user.length == 0) {
         return res.status(422).json({
           success: false,
           errors: { user: 'Does not exist' },
         })
       }
 
-      if (query.role == 'admin') {
-        const students = await Student.find({}).lean().exec()
+      if (user.role !== 'admin') query._id = { $in: user.students }
 
-        if (!students) {
-          res.status(404).end()
-        }
+      const students = await paginatedQuery(res, Student, query, null, options)
 
-        res.status(200).json(students)
-      } else {
-        const students = await Student.find({ _id: { $in: query.students } })
-          .lean()
-          .exec()
-
-        if (!students) {
-          res.status(404).end()
-        }
-
-        res.status(200).json(students)
+      if (!students) {
+        res.status(404).end()
       }
+
+      res.status(200).json(students)
     } catch (error) {
       console.error(error)
       res.status(500).send(error)
