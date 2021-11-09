@@ -1,5 +1,10 @@
 import { Router } from 'express'
 import { User } from '../'
+import {
+  extractQueryParams,
+  paginatedQuery,
+  constructSearchQuery,
+} from '../utils'
 
 const router = Router()
 
@@ -137,31 +142,37 @@ router.post('/getAllFromRole', async (req, res, next) => {
     body: { role },
   } = req
 
-  // console.log("res", role)
+  const { searchTerm, ...options } = extractQueryParams(req)
 
-  const list = await User.find({ role: role })
+  const query = searchTerm
+    ? constructSearchQuery(
+        ['firstName', 'lastName', 'email', 'school'],
+        searchTerm
+      )
+    : {}
 
-  const filteredList = list.map((user) => {
-    return {
-      role: user.role,
-      students: user.students,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      languagesSpoken: user.languagesSpoken,
-      isActive: user.isActive,
-      _id: user._id,
-    }
-  })
+  query.role = role
 
-  res.send({ success: true, list: filteredList })
+  const projection = {
+    role: 1,
+    students: 1,
+    email: 1,
+    firstName: 1,
+    lastName: 1,
+    languagesSpoken: 1,
+    isActive: 1,
+    _id: 1,
+  }
+
+  const list = await paginatedQuery(res, User, query, projection, options)
+
+  res.send({ success: true, list })
 })
 
 router.post('/update', async (req, res, next) => {
   const {
     body: { user },
   } = req
-  console.log("in update backend")
   const query = await User.find({ _id: user._id })
   if (query.length == 0) {
     return res.status(422).json({
@@ -169,20 +180,29 @@ router.post('/update', async (req, res, next) => {
       errors: { user: 'Does not exist' },
     })
   }
-  User.updateOne({_id: query[0]._id}, {
-    role: user.role,
-    students: user.students,
-    email: user.email,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    isActive: user.isActive,
-    languagesSpoken: user.languagesSpoken,
-    school: user.school
-  })
-  .then(() => res.send({ success: true, message: 'User profile successfully saved!' }))
-  .catch((e) => res.status(422).json({ success: false, errors: e, message: 'Error saving user profile' }))
-
-
+  User.updateOne(
+    { _id: query[0]._id },
+    {
+      role: user.role,
+      students: user.students,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      isActive: user.isActive,
+      languagesSpoken: user.languagesSpoken,
+      school: user.school,
+    }
+  )
+    .then(() =>
+      res.send({ success: true, message: 'User profile successfully saved!' })
+    )
+    .catch((e) =>
+      res.status(422).json({
+        success: false,
+        errors: e,
+        message: 'Error saving user profile',
+      })
+    )
 })
 
 export default router
