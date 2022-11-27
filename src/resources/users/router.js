@@ -161,6 +161,7 @@ router.post('/getAllFromRole', async (req, res, next) => {
     lastName: 1,
     languagesSpoken: 1,
     isActive: 1,
+    isRegistered: 1,
     _id: 1,
   }
 
